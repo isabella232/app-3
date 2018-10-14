@@ -30,6 +30,10 @@ const H2 = styled(DefaultH2)`
   align-items: center;
 `
 
+const Field = styled('div')`
+  margin: 5px 0;
+`
+
 const Row = styled('div')`
   display: flex;
   justify-content: space-around;
@@ -40,13 +44,12 @@ const Column = styled('div')`
   flex: 0.5;
 `
 
-const Block = styled('div')``
-
 
 const TextInput = styled(DefaultTextInput)``
 
 export default class SignIn extends Component {
   state = {
+    name: '',
     email: '',
     twitter: ''
   }
@@ -77,7 +80,7 @@ export default class SignIn extends Component {
   }
 
   renderSignUp(userAddress, toggleModal) {
-    const { email, twitter } = this.state
+    const { name, email, twitter } = this.state
 
     const social = [
       {
@@ -107,59 +110,58 @@ export default class SignIn extends Component {
           <Pencil />
           Create account
         </H2>
-        <Label secondaryText="(public)">Ethereum address</Label>
+        <Label>Ethereum address</Label>
         <InputAddress address={userAddress} />
-        <Row>
-          <Column>
-            <Label>Email</Label>
-            <TextInput
-              placeholder="alice@gmail.com"
-              value={email}
-              onChange={this.handleEmailChange}
-            />
-          </Column>
-          <Column>
-            <Label secondaryText="(optional)">Twitter</Label>
-            <TextInput
-              placeholder="@jack"
-              value={twitter}
-              onChange={this.handleTwitterChange}
-            />
-          </Column>
-        </Row>
-        <Block>
+        <Field>
+          <Label>Full name</Label>
+          <TextInput
+            placeholder="John Smith"
+            value={name}
+            onChange={this.handleNameChange}
+          />
+        </Field>
+        <Field>
+          <Label secondaryText="(optional)">Email</Label>
+          <TextInput
+            placeholder="alice@gmail.com"
+            value={email}
+            onChange={this.handleEmailChange}
+          />
+        </Field>
+        <Field>
+          <Label secondaryText="(optional)">Twitter</Label>
+          <TextInput
+            placeholder="@jack"
+            value={twitter}
+            onChange={this.handleTwitterChange}
+          />
+        </Field>
+        <Field>
           <p>
-            <strong>Please note, your payment for an event is non-refundable if:</strong>
+            <input
+              type="checkbox"
+              value={TERMS_AND_CONDITIONS}
+              checked={!!this.state[TERMS_AND_CONDITIONS]}
+              onChange={this.handleTermsCheck}
+            /> I agree with the <a href={`/terms`}>terms and conditions</a>
           </p>
-          <ul>
-            <li>You <a href={`/faq`}>RSVP</a> to an event but then don't turn up.</li>
-            <li>You fail to withdraw your post-event payout within the <a href={`/faq`}>cooling period</a>.</li>
-          </ul>
-        </Block>
-        <p>
-          <input
-            type="checkbox"
-            value={TERMS_AND_CONDITIONS}
-            checked={!!this.state[TERMS_AND_CONDITIONS]}
-            onChange={this.handleTermsCheck}
-          /> I agree with the <a href={`/terms`}>terms and conditions</a>
-        </p>
-        <p>
-          <input
-            type="checkbox"
-            value={PRIVACY_POLICY}
-            checked={!!this.state[PRIVACY_POLICY]}
-            onChange={this.handlePrivacyCheck}
-          /> I agree with the <a href={`/privacy`}>privacy policy</a>
-        </p>
-        <p>
-          <input
-            type="checkbox"
-            value={MARKETING_INFO}
-            checked={!!this.state[MARKETING_INFO]}
-            onChange={this.handleMarketingCheck}
-          /> I am happy to receive marketing info (optional)
-        </p>
+          <p>
+            <input
+              type="checkbox"
+              value={PRIVACY_POLICY}
+              checked={!!this.state[PRIVACY_POLICY]}
+              onChange={this.handlePrivacyCheck}
+            /> I agree with the <a href={`/privacy`}>privacy policy</a>
+          </p>
+          <p>
+            <input
+              type="checkbox"
+              value={MARKETING_INFO}
+              checked={!!this.state[MARKETING_INFO]}
+              onChange={this.handleMarketingCheck}
+            /> I am happy to receive marketing info (optional)
+          </p>
+        </Field>
         <SafeMutation
           mutation={UpdateUserProfile}
           variables={{ profile: { email, social, legal } }}

@@ -1,5 +1,7 @@
+import _ from 'lodash'
 import React, { Component } from 'react'
 import styled from 'react-emotion'
+import { Link } from 'react-router-dom'
 
 import DefaultRSVP from './RSVP'
 import ChainMutation, { ChainMutationButton } from '../ChainMutation'
@@ -48,6 +50,14 @@ const Deposit = styled('div')`
 
 const RSVP = styled(DefaultRSVP)`
   width: calc(100% - 120px);
+`
+
+const ImportantNote = styled('div')`
+  font-weight: bold;
+  margin: 15px 0 5px;
+  padding: 1em;
+  border-radius: 4px;
+  background-color: #ccc;
 `
 
 const AdminCTA = styled('div')`
@@ -111,16 +121,21 @@ class EventCTA extends Component {
       party: { participants, participantLimit }
     } = this.props
 
+    const spotsLeft = participantLimit - participants.length
+
     return (
       <CTA>
         Join the event!{' '}
         <RemainingSpots>
-          {`${participants.length} going. ${participantLimit -
-            participants.length} ${pluralize(
-            'spot',
-            participantLimit - participants.length
-          )} left.`}
+          {`${participants.length} going. ${spotsLeft} ${pluralize('spot', spotsLeft)} left.`}
         </RemainingSpots>
+
+        {spotsLeft ? (
+          <ImportantNote>
+            Please note, your payment is non-refundable if you RSVP but then don't turn up.
+          </ImportantNote>
+        ) : null}
+
       </CTA>
     )
   }
@@ -135,16 +150,26 @@ class EventCTA extends Component {
 
   _renderEnded() {
     const {
+      myParticipantEntry,
       party: { participants }
     } = this.props
 
     const totalReg = participants.length
     const numWent = calculateNumAttended(participants)
 
+    const showNote = _.get(myParticipantEntry, 'status', '' === PARTICIPANT_STATUS.SHOWED_UP)
+
     return (
       <CTA>
         This meetup is past. {numWent} out of {totalReg} people went to this
         event.
+
+        {showNote ? (
+          <ImportantNote>
+            Please note, your payment is non-refundable if you fail to withdraw your post-event payout within the <Link to={`/faq`}>cooling period.</Link>
+          </ImportantNote>
+        ) : null}
+
       </CTA>
     )
   }
@@ -197,7 +222,7 @@ class EventCTA extends Component {
                     onClick={finalize}
                     toThirds
                     preContent="Finalize and enable payouts"
-                    postContent="Finalize and enable payouts"
+                    postContent="Event finalized!"
                   />
                 )}
               </ChainMutation>
